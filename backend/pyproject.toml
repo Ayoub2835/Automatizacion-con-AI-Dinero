@@ -1,0 +1,36 @@
+[project]
+name = "gestoria-backend"
+version = "0.1.0"
+description = "Backend del SaaS de IA para gestorías (fase de fundación técnica)"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+# B008: Depends(...) en valores por defecto es el patrón idiomático de FastAPI.
+ignore = ["B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = "alembic.*"
+ignore_errors = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# Todos los fixtures/tests async comparten un único event loop de sesión,
+# necesario porque el engine de SQLAlchemy (session-scoped) no puede
+# reutilizarse entre event loops distintos.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
