@@ -103,6 +103,11 @@ Next.js (App Router) + TypeScript. Por ahora es intencionalmente mínimo:
 autenticación contra el backend y un shell de dashboard vacío, sin
 funcionalidades de negocio. Ver [`frontend/README.md`](frontend/README.md).
 
+El navegador nunca llama directamente a la API de FastAPI: todas las
+llamadas pasan por Route Handlers de Next.js, que gestionan la sesión con
+una cookie `httpOnly` (patrón "Backend for Frontend"). Ver
+[ADR 0007](docs/decisions/0007-frontend-backend-for-frontend.md).
+
 ## 6. Transversales (Fase 1)
 
 | Aspecto | Solución actual |

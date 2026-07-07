@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session
+from app.api.deps import get_current_user, get_db_session
 from app.api.v1.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
 from app.application.services.auth_service import AuthService
+from app.domain.entities.user import User
 from app.infrastructure.database.repositories.organization_repository import (
     SqlAlchemyOrganizationRepository,
 )
@@ -42,3 +43,8 @@ async def login(
 ) -> TokenResponse:
     tokens = await auth_service.authenticate(email=payload.email, password=payload.password)
     return TokenResponse(access_token=tokens.access_token, refresh_token=tokens.refresh_token)
+
+
+@router.get("/me", response_model=UserResponse)
+async def me(current_user: User = Depends(get_current_user)) -> UserResponse:
+    return UserResponse.model_validate(current_user, from_attributes=True)
