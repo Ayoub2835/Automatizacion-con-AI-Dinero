@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import select
@@ -57,6 +58,13 @@ class SqlAlchemyCampaignClientRepository:
         model = await self._session.get(CampaignClientModel, campaign_client_id)
         if model is not None:
             model.status = status
+
+    async def mark_reminder_sent(self, campaign_client_id: UUID, sent_at: datetime) -> None:
+        model = await self._session.get(CampaignClientModel, campaign_client_id)
+        if model is not None:
+            # La columna es TIMESTAMP WITHOUT TIME ZONE (igual que created_at/
+            # uploaded_at en el resto del esquema), así que se guarda naive.
+            model.last_reminder_sent_at = sent_at.replace(tzinfo=None)
 
     @staticmethod
     def _to_entity(model: CampaignClientModel) -> CampaignClient:

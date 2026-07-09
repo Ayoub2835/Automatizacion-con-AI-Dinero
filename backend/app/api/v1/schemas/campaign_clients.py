@@ -17,3 +17,4 @@ class CampaignClientResponse(BaseModel):
     status: str
     upload_url: str
     created_at: datetime
+    last_reminder_sent_at: datetime | None = None

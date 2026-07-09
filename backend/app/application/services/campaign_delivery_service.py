@@ -103,3 +103,35 @@ class CampaignDeliveryService:
             await self._email_sender.send(to=invite.client.email, subject=subject, body=body)
 
         return invites
+
+    async def send_reminders(self, campaign: Campaign) -> list[SentCampaignInvite]:
+        """Reenvía el email de solicitud a los clientes de la campaña que
+        siguen `pending`. No toca a los ya `complete`.
+        """
+        campaign_clients = await self._campaign_clients.list_for_campaign(campaign.id)
+        pending = [cc for cc in campaign_clients if cc.status == CampaignClientStatus.PENDING]
+        if not pending:
+            return []
+
+        reminders = []
+        for campaign_client in pending:
+            client = await self._clients.get_by_id(
+                campaign_client.client_id, campaign.organization_id
+            )
+            if client is None:
+                continue
+            upload_url = f"{self._frontend_url}/upload/{campaign_client.upload_token}"
+            reminders.append(
+                SentCampaignInvite(
+                    campaign_client=campaign_client, client=client, upload_url=upload_url
+                )
+            )
+
+        sent_at = datetime.now(UTC)
+        for reminder in reminders:
+            subject, body = build_document_request_email(campaign, reminder.upload_url)
+            await self._email_sender.send(to=reminder.client.email, subject=subject, body=body)
+            await self._campaign_clients.mark_reminder_sent(reminder.campaign_client.id, sent_at)
+            reminder.campaign_client.last_reminder_sent_at = sent_at
+
+        return reminders

@@ -12,7 +12,10 @@ from app.api.v1.schemas.campaign_status import (
     CampaignStatusResponse,
 )
 from app.api.v1.schemas.campaigns import CampaignResponse, CreateCampaignRequest
-from app.application.services.campaign_delivery_service import CampaignDeliveryService
+from app.application.services.campaign_delivery_service import (
+    CampaignDeliveryService,
+    SentCampaignInvite,
+)
 from app.application.services.campaign_service import CampaignService
 from app.application.services.campaign_status_service import CampaignStatusService
 from app.application.services.document_status import compute_document_type_statuses
@@ -119,19 +122,40 @@ async def send_campaign(
     invites = await delivery_service.send_to_clients(campaign, payload.client_ids)
     await session.commit()
 
-    return [
-        CampaignClientResponse(
-            id=invite.campaign_client.id,
-            campaign_id=invite.campaign_client.campaign_id,
-            client_id=invite.campaign_client.client_id,
-            client_name=invite.client.name,
-            client_email=invite.client.email,
-            status=invite.campaign_client.status,
-            upload_url=invite.upload_url,
-            created_at=invite.campaign_client.created_at,
-        )
-        for invite in invites
-    ]
+    return [_to_campaign_client_response(invite) for invite in invites]
+
+
+@router.post("/{campaign_id}/remind", response_model=list[CampaignClientResponse])
+async def remind_campaign(
+    campaign_id: UUID,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+    campaign_service: CampaignService = Depends(_get_campaign_service),
+    delivery_service: CampaignDeliveryService = Depends(_get_delivery_service),
+) -> list[CampaignClientResponse]:
+    """Reenvía el email de solicitud a los clientes `pending` de la campaña.
+
+    No hace nada con los clientes ya `complete` ni con campañas sin envíos.
+    """
+    campaign = await campaign_service.get(campaign_id, current_user.organization_id)
+    reminders = await delivery_service.send_reminders(campaign)
+    await session.commit()
+
+    return [_to_campaign_client_response(reminder) for reminder in reminders]
+
+
+def _to_campaign_client_response(invite: SentCampaignInvite) -> CampaignClientResponse:
+    return CampaignClientResponse(
+        id=invite.campaign_client.id,
+        campaign_id=invite.campaign_client.campaign_id,
+        client_id=invite.campaign_client.client_id,
+        client_name=invite.client.name,
+        client_email=invite.client.email,
+        status=invite.campaign_client.status,
+        upload_url=invite.upload_url,
+        created_at=invite.campaign_client.created_at,
+        last_reminder_sent_at=invite.campaign_client.last_reminder_sent_at,
+    )
 
 
 @router.get("/{campaign_id}/status", response_model=CampaignStatusResponse)

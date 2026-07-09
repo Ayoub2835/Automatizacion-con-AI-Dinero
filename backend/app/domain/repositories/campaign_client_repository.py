@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Protocol
 from uuid import UUID
 
@@ -20,3 +21,5 @@ class CampaignClientRepository(Protocol):
     async def update_status(
         self, campaign_client_id: UUID, status: CampaignClientStatus
     ) -> None: ...
+
+    async def mark_reminder_sent(self, campaign_client_id: UUID, sent_at: datetime) -> None: ...
