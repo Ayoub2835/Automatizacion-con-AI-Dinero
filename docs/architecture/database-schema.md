@@ -94,6 +94,23 @@ Restricción `UNIQUE(campaign_id, client_id)`: una campaña solo puede
 enviarse una vez a un mismo cliente (reenviar es idempotente, ver ADR 0008
 sobre `upload_token` sin expiración).
 
+### `documents`
+
+Un fichero subido por un cliente. El fichero en sí vive en disco (ver
+ADR 0010); esta tabla solo guarda metadatos.
+
+| Columna | Tipo | Notas |
+|---|---|---|
+| `id` | UUID (PK) | |
+| `campaign_client_id` | UUID (FK → campaign_clients.id) | Indexado |
+| `campaign_document_type_id` | UUID (FK → campaign_document_types.id, nullable) | Null hasta clasificarse (T6) |
+| `original_filename` | text | Nombre tal cual lo subió el cliente (no de confianza) |
+| `storage_path` | text | Ruta relativa dentro de `UPLOADS_DIR`, opaca |
+| `content_type` | text | `application/pdf`, `image/jpeg` o `image/png` (únicos admitidos) |
+| `status` | text con CHECK (`classified` \| `unclassified`) | |
+| `classification_confidence` | float (nullable) | Puntuación de confianza de Claude (T6) |
+| `uploaded_at` | timestamptz | |
+
 ## Regla para tablas futuras
 
 Toda tabla de negocio nueva:

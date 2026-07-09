@@ -7,6 +7,7 @@ from app.infrastructure.database.models.campaign import (
 )
 from app.infrastructure.database.models.campaign_client import CampaignClientModel
 from app.infrastructure.database.models.client import ClientModel
+from app.infrastructure.database.models.document import DocumentModel
 from app.infrastructure.database.models.organization import OrganizationModel
 from app.infrastructure.database.models.user import UserModel
 
@@ -15,6 +16,7 @@ __all__ = [
     "CampaignDocumentTypeModel",
     "CampaignModel",
     "ClientModel",
+    "DocumentModel",
     "OrganizationModel",
     "UserModel",
 ]

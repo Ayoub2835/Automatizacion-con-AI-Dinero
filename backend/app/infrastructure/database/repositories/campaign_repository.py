@@ -54,6 +54,15 @@ class SqlAlchemyCampaignRepository:
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
 
+    async def get_by_id_unscoped(self, campaign_id: UUID) -> Campaign | None:
+        result = await self._session.execute(
+            select(CampaignModel)
+            .options(selectinload(CampaignModel.document_types))
+            .where(CampaignModel.id == campaign_id)
+        )
+        model = result.scalar_one_or_none()
+        return self._to_entity(model) if model else None
+
     async def list_for_organization(self, organization_id: UUID) -> list[Campaign]:
         result = await self._session.execute(
             select(CampaignModel)

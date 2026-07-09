@@ -1,20 +1,26 @@
+import os
+import tempfile
 from collections.abc import AsyncGenerator
 
-import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import (
+# Los documentos subidos en los tests van a un directorio temporal, no al
+# UPLOADS_DIR real — debe fijarse antes de que algo importe app.core.config.
+os.environ.setdefault("UPLOADS_DIR", tempfile.mkdtemp(prefix="gestoria-test-uploads-"))
+
+import pytest_asyncio  # noqa: E402
+from httpx import ASGITransport, AsyncClient  # noqa: E402
+from sqlalchemy.ext.asyncio import (  # noqa: E402
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
 
-from app.api.deps import get_db_session, get_email_sender
-from app.core.config import get_settings
-from app.infrastructure.database.base import Base
-from app.infrastructure.database.models import OrganizationModel, UserModel  # noqa: F401
-from app.main import app
-from tests.fakes import FakeEmailSender
+from app.api.deps import get_db_session, get_email_sender  # noqa: E402
+from app.core.config import get_settings  # noqa: E402
+from app.infrastructure.database.base import Base  # noqa: E402
+from app.infrastructure.database.models import OrganizationModel, UserModel  # noqa: E402, F401
+from app.main import app  # noqa: E402
+from tests.fakes import FakeEmailSender  # noqa: E402
 
 settings = get_settings()
 

@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = False
     smtp_from_email: str = "no-reply@gestoria.local"
 
+    # Directorio donde se guardan los documentos subidos (ver ADR 0010).
+    uploads_dir: str = "uploads"
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
