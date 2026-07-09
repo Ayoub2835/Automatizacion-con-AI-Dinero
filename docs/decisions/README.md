@@ -14,3 +14,4 @@ para el formato y el proceso.
 | [0005](0005-multi-tenancy-model.md) | Multi-tenancy a nivel de fila desde el primer commit |
 | [0006](0006-monorepo.md) | Monorepo para backend y frontend |
 | [0007](0007-frontend-backend-for-frontend.md) | El navegador nunca llama al backend directamente (patrón BFF) |
+| [0008](0008-mvp-empleado-documental.md) | MVP "Empleado Documental": alcance y modelo de datos |

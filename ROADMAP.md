@@ -33,17 +33,31 @@ Esta fase la impulsa negocio/producto, no ingeniería. El código de este
 repo no debería cambiar sustancialmente durante esta fase, más allá de
 arreglos.
 
-## Fase 2 — MVP de producto (pendiente de definir tras validación)
+## Fase 2 — MVP: "Empleado Documental" 🚧 (en curso)
 
-Deliberadamente sin definir todavía. Candidatos a evaluar según lo que
-diga la Fase 1 (ninguno decidido):
+Hipótesis elegida para validar con el primer cliente de pago: la gestoría
+pierde tiempo reclamando y organizando la documentación anual de sus
+clientes (DNI, recibos, justificantes...). El MVP automatiza solo ese
+flujo, de punta a punta, sin nada más:
 
-- Asistente de IA para responder dudas normativas con fuentes verificables.
-- Extracción/estructuración de datos de documentos (facturas, nóminas).
-- Panel de cumplimiento de plazos (alertas de vencimientos).
+1. Registrar clientes de la gestoría.
+2. Crear una campaña con los tipos de documento requeridos.
+3. Enviarla por email con un enlace seguro (sin login) por cliente.
+4. El cliente sube sus documentos desde ese enlace.
+5. Claude clasifica automáticamente cada documento entre los tipos
+   requeridos.
+6. El gestor ve, por campaña, qué clientes están completos, cuáles
+   pendientes y qué documento falta a cada uno.
+7. El gestor puede reenviar el recordatorio con un clic.
 
-Cuando se decida, este documento se actualiza con las funcionalidades
-concretas y un ADR justifica la elección.
+Explícitamente fuera de esta fase (ver [ADR 0008](docs/decisions/0008-mvp-empleado-documental.md)):
+WhatsApp (solo email por ahora), facturación, permisos granulares,
+notificaciones avanzadas, dashboards sofisticados, reclasificación manual
+de documentos, expiración de enlaces. Se documentan como puntos de
+extensión, no se construyen sin que un cliente de pago los pida.
+
+Criterio de salida de esta fase: una gestoría real usa el flujo completo
+con sus propios clientes durante al menos una campaña real.
 
 ## Fase 3 — Integraciones (pospuesta explícitamente)
 

@@ -37,6 +37,21 @@ requiere `ALTER TYPE ... ADD VALUE`, que tiene restricciones dentro de
 transacciones. Se prioriza flexibilidad sobre la validación extra que da
 un tipo nativo.
 
+### `clients`
+
+Un cliente de la gestoría (destinatario de solicitudes de documentación,
+ver [ADR 0008](../decisions/0008-mvp-empleado-documental.md)).
+
+| Columna | Tipo | Notas |
+|---|---|---|
+| `id` | UUID (PK) | |
+| `organization_id` | UUID (FK → organizations.id) | Obligatorio, indexado |
+| `name` | text | |
+| `email` | text | No único: una gestoría puede tener clientes con el mismo email de contacto (ej. una gestoría) |
+| `phone` | text (nullable) | |
+| `metadata` | JSONB | Punto de extensión |
+| `created_at` | timestamptz | |
+
 ## Regla para tablas futuras
 
 Toda tabla de negocio nueva:
