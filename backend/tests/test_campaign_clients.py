@@ -2,6 +2,8 @@ from uuid import uuid4
 
 from httpx import AsyncClient
 
+from tests.fakes import FakeEmailSender
+
 
 async def _register_and_login(client: AsyncClient, email: str) -> str:
     await client.post(
@@ -37,7 +39,9 @@ async def _create_campaign(client: AsyncClient, headers: dict[str, str]) -> str:
     return str(response.json()["id"])
 
 
-async def test_send_campaign_creates_secure_links(client: AsyncClient) -> None:
+async def test_send_campaign_creates_secure_links_and_sends_email(
+    client: AsyncClient, email_sender: FakeEmailSender
+) -> None:
     token = await _register_and_login(client, "envio1@example.com")
     headers = {"Authorization": f"Bearer {token}"}
     client_id = await _create_client(client, headers, "cliente-envio1@example.com")
@@ -55,8 +59,17 @@ async def test_send_campaign_creates_secure_links(client: AsyncClient) -> None:
     assert body[0]["status"] == "pending"
     assert body[0]["upload_url"].startswith("http://localhost:3000/upload/")
 
+    assert len(email_sender.sent) == 1
+    sent = email_sender.sent[0]
+    assert sent.to == "cliente-envio1@example.com"
+    assert "Campaña de prueba" in sent.subject
+    assert body[0]["upload_url"] in sent.body
+    assert "DNI" in sent.body
 
-async def test_sending_campaign_twice_is_idempotent(client: AsyncClient) -> None:
+
+async def test_sending_campaign_twice_is_idempotent_and_does_not_resend_email(
+    client: AsyncClient, email_sender: FakeEmailSender
+) -> None:
     token = await _register_and_login(client, "envio2@example.com")
     headers = {"Authorization": f"Bearer {token}"}
     client_id = await _create_client(client, headers, "cliente-envio2@example.com")
@@ -76,6 +89,7 @@ async def test_sending_campaign_twice_is_idempotent(client: AsyncClient) -> None
     )
     assert second.status_code == 201
     assert second.json() == []
+    assert len(email_sender.sent) == 1
 
 
 async def test_send_campaign_rejects_client_from_another_organization(client: AsyncClient) -> None:

@@ -64,6 +64,7 @@ cp .env.example .env
 
 # Backend disponible en   http://localhost:8000  (docs en /docs)
 # Frontend disponible en  http://localhost:3000
+# Emails enviados (Mailpit) en http://localhost:8025
 ```
 
 Ver [`scripts/README.md`](scripts/README.md) para el resto de scripts

@@ -15,3 +15,4 @@ para el formato y el proceso.
 | [0006](0006-monorepo.md) | Monorepo para backend y frontend |
 | [0007](0007-frontend-backend-for-frontend.md) | El navegador nunca llama al backend directamente (patrón BFF) |
 | [0008](0008-mvp-empleado-documental.md) | MVP "Empleado Documental": alcance y modelo de datos |
+| [0009](0009-email-smtp.md) | Envío de email por SMTP genérico, no un proveedor concreto |

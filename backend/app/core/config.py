@@ -29,6 +29,15 @@ class Settings(BaseSettings):
     # en el email). No confundir con API_URL del frontend, que es interno.
     frontend_url: str = "http://localhost:3000"
 
+    # SMTP genérico (ver ADR 0009): sin vendor lock-in, cualquier proveedor
+    # (Gmail, SendGrid, Amazon SES...) o un servidor local de pruebas sirve.
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    smtp_use_tls: bool = False
+    smtp_from_email: str = "no-reply@gestoria.local"
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"

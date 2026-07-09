@@ -9,11 +9,12 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.api.deps import get_db_session
+from app.api.deps import get_db_session, get_email_sender
 from app.core.config import get_settings
 from app.infrastructure.database.base import Base
 from app.infrastructure.database.models import OrganizationModel, UserModel  # noqa: F401
 from app.main import app
+from tests.fakes import FakeEmailSender
 
 settings = get_settings()
 
@@ -48,11 +49,20 @@ async def db_session(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest_asyncio.fixture
-async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+def email_sender() -> FakeEmailSender:
+    """Doble en memoria de EmailSender, inyectado en el cliente de test."""
+    return FakeEmailSender()
+
+
+@pytest_asyncio.fixture
+async def client(
+    db_session: AsyncSession, email_sender: FakeEmailSender
+) -> AsyncGenerator[AsyncClient, None]:
     async def _override_get_db_session() -> AsyncGenerator[AsyncSession, None]:
         yield db_session
 
     app.dependency_overrides[get_db_session] = _override_get_db_session
+    app.dependency_overrides[get_email_sender] = lambda: email_sender
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac

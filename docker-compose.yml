@@ -16,6 +16,18 @@ services:
       timeout: 5s
       retries: 10
 
+  # Servidor SMTP de pruebas: intercepta los emails salientes del backend en
+  # desarrollo y los muestra en una UI web, sin necesitar credenciales SMTP
+  # reales. Para una demo con una gestoría real, cambia SMTP_HOST/PORT/etc.
+  # en .env a un proveedor real (Gmail, SendGrid, Amazon SES...) — no hace
+  # falta tocar código (ver ADR 0009).
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025" # UI web para ver los emails enviados
+      - "1025:1025" # SMTP
+
   backend:
     build:
       context: ./backend
@@ -25,6 +37,7 @@ services:
       - .env
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-gestoria}:${POSTGRES_PASSWORD:-gestoria}@db:5432/${POSTGRES_DB:-gestoria}
+      SMTP_HOST: mailpit
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:
@@ -32,6 +45,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:

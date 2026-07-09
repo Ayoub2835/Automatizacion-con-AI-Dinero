@@ -3,13 +3,14 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_db_session
+from app.api.deps import get_current_user, get_db_session, get_email_sender
 from app.api.v1.schemas.campaign_clients import CampaignClientResponse, SendCampaignRequest
 from app.api.v1.schemas.campaigns import CampaignResponse, CreateCampaignRequest
 from app.application.services.campaign_delivery_service import CampaignDeliveryService
 from app.application.services.campaign_service import CampaignService
 from app.core.config import get_settings
 from app.domain.entities.user import User
+from app.domain.ports.email_sender import EmailSender
 from app.infrastructure.database.repositories.campaign_client_repository import (
     SqlAlchemyCampaignClientRepository,
 )
@@ -27,10 +28,13 @@ def _get_campaign_service(session: AsyncSession = Depends(get_db_session)) -> Ca
 
 def _get_delivery_service(
     session: AsyncSession = Depends(get_db_session),
+    email_sender: EmailSender = Depends(get_email_sender),
 ) -> CampaignDeliveryService:
     return CampaignDeliveryService(
         campaign_clients=SqlAlchemyCampaignClientRepository(session),
         clients=SqlAlchemyClientRepository(session),
+        email_sender=email_sender,
+        frontend_url=get_settings().frontend_url,
     )
 
 
@@ -82,29 +86,27 @@ async def send_campaign(
     campaign_service: CampaignService = Depends(_get_campaign_service),
     delivery_service: CampaignDeliveryService = Depends(_get_delivery_service),
 ) -> list[CampaignClientResponse]:
-    """Asocia la campaña a los clientes indicados y genera su enlace seguro.
+    """Asocia la campaña a los clientes indicados, genera su enlace seguro
+    y envía el email de solicitud de documentación.
 
-    Idempotente: un client_id ya asociado a la campaña se omite en vez de
-    duplicarse. El envío del email se hace en un paso posterior (T4).
+    Idempotente: un client_id ya asociado a la campaña se omite (no se
+    duplica la fila ni se reenvía el email).
     """
     # Lanza 404 si la campaña no existe o no pertenece a esta organización.
-    await campaign_service.get(campaign_id, current_user.organization_id)
-    created = await delivery_service.send_to_clients(
-        campaign_id, current_user.organization_id, payload.client_ids
-    )
+    campaign = await campaign_service.get(campaign_id, current_user.organization_id)
+    invites = await delivery_service.send_to_clients(campaign, payload.client_ids)
     await session.commit()
 
-    frontend_url = get_settings().frontend_url.rstrip("/")
     return [
         CampaignClientResponse(
-            id=cc.id,
-            campaign_id=cc.campaign_id,
-            client_id=cc.client_id,
-            client_name=client.name,
-            client_email=client.email,
-            status=cc.status,
-            upload_url=f"{frontend_url}/upload/{cc.upload_token}",
-            created_at=cc.created_at,
+            id=invite.campaign_client.id,
+            campaign_id=invite.campaign_client.campaign_id,
+            client_id=invite.campaign_client.client_id,
+            client_name=invite.client.name,
+            client_email=invite.client.email,
+            status=invite.campaign_client.status,
+            upload_url=invite.upload_url,
+            created_at=invite.campaign_client.created_at,
         )
-        for cc, client in created
+        for invite in invites
     ]
