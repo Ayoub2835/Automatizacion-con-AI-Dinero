@@ -53,6 +53,11 @@ class SqlAlchemyCampaignClientRepository:
         )
         return [self._to_entity(m) for m in result.scalars().all()]
 
+    async def update_status(self, campaign_client_id: UUID, status: CampaignClientStatus) -> None:
+        model = await self._session.get(CampaignClientModel, campaign_client_id)
+        if model is not None:
+            model.status = status
+
     @staticmethod
     def _to_entity(model: CampaignClientModel) -> CampaignClient:
         return CampaignClient(

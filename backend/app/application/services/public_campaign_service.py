@@ -2,8 +2,9 @@ import logging
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
+from app.application.services.document_status import compute_document_type_statuses, is_complete
 from app.domain.entities.campaign import Campaign
-from app.domain.entities.campaign_client import CampaignClient
+from app.domain.entities.campaign_client import CampaignClient, CampaignClientStatus
 from app.domain.entities.document import Document, DocumentStatus
 from app.domain.exceptions import EntityNotFoundError
 from app.domain.ports.document_classifier import DocumentClassifier
@@ -66,7 +67,23 @@ class PublicCampaignService:
             uploaded_at=datetime.now(UTC),
             campaign_document_type_id=campaign_document_type_id,
         )
-        return await self._documents.create(document)
+        created = await self._documents.create(document)
+        await self._sync_completion_status(campaign, campaign_client)
+        return created
+
+    async def _sync_completion_status(
+        self, campaign: Campaign, campaign_client: CampaignClient
+    ) -> None:
+        """Si con este documento ya están todos los tipos requeridos
+        cubiertos, marca la campaña-cliente como completa (ver ADR 0008)."""
+        if campaign_client.status == CampaignClientStatus.COMPLETE:
+            return
+        documents = await self._documents.list_for_campaign_clients([campaign_client.id])
+        statuses = compute_document_type_statuses(campaign, documents)
+        if is_complete(statuses):
+            await self._campaign_clients.update_status(
+                campaign_client.id, CampaignClientStatus.COMPLETE
+            )
 
     async def _classify(
         self, campaign: Campaign, content: bytes, content_type: str

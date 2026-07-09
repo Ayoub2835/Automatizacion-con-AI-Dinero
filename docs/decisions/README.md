@@ -18,3 +18,4 @@ para el formato y el proceso.
 | [0009](0009-email-smtp.md) | Envío de email por SMTP genérico, no un proveedor concreto |
 | [0010](0010-local-file-storage.md) | Almacenamiento de documentos en disco local (no S3 todavía) |
 | [0011](0011-claude-document-classification.md) | Clasificación automática de documentos con Claude |
+| [0012](0012-campaign-client-completion.md) | Cuándo se marca "completo" un cliente de una campaña |

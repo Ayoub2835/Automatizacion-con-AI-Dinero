@@ -5,9 +5,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_db_session, get_email_sender
 from app.api.v1.schemas.campaign_clients import CampaignClientResponse, SendCampaignRequest
+from app.api.v1.schemas.campaign_status import (
+    CampaignClientStatusResponse,
+    CampaignStatusDocumentResponse,
+    CampaignStatusDocumentTypeResponse,
+    CampaignStatusResponse,
+)
 from app.api.v1.schemas.campaigns import CampaignResponse, CreateCampaignRequest
 from app.application.services.campaign_delivery_service import CampaignDeliveryService
 from app.application.services.campaign_service import CampaignService
+from app.application.services.campaign_status_service import CampaignStatusService
+from app.application.services.document_status import compute_document_type_statuses
 from app.core.config import get_settings
 from app.domain.entities.user import User
 from app.domain.ports.email_sender import EmailSender
@@ -18,6 +26,9 @@ from app.infrastructure.database.repositories.campaign_repository import (
     SqlAlchemyCampaignRepository,
 )
 from app.infrastructure.database.repositories.client_repository import SqlAlchemyClientRepository
+from app.infrastructure.database.repositories.document_repository import (
+    SqlAlchemyDocumentRepository,
+)
 
 router = APIRouter()
 
@@ -35,6 +46,17 @@ def _get_delivery_service(
         clients=SqlAlchemyClientRepository(session),
         email_sender=email_sender,
         frontend_url=get_settings().frontend_url,
+    )
+
+
+def _get_status_service(
+    session: AsyncSession = Depends(get_db_session),
+) -> CampaignStatusService:
+    return CampaignStatusService(
+        campaigns=SqlAlchemyCampaignRepository(session),
+        campaign_clients=SqlAlchemyCampaignClientRepository(session),
+        clients=SqlAlchemyClientRepository(session),
+        documents=SqlAlchemyDocumentRepository(session),
     )
 
 
@@ -110,3 +132,53 @@ async def send_campaign(
         )
         for invite in invites
     ]
+
+
+@router.get("/{campaign_id}/status", response_model=CampaignStatusResponse)
+async def get_campaign_status(
+    campaign_id: UUID,
+    current_user: User = Depends(get_current_user),
+    status_service: CampaignStatusService = Depends(_get_status_service),
+) -> CampaignStatusResponse:
+    """Panel del gestor: por cada cliente al que se envió la campaña, su
+    estado (completo/pendiente), documentos recibidos y tipos que faltan.
+    """
+    campaign, rows = await status_service.get_status(campaign_id, current_user.organization_id)
+    types_by_id = {t.id: t.name for t in campaign.document_types}
+
+    clients_response = []
+    for campaign_client, client, documents in rows:
+        document_type_statuses = compute_document_type_statuses(campaign, documents)
+        clients_response.append(
+            CampaignClientStatusResponse(
+                campaign_client_id=campaign_client.id,
+                client_id=client.id,
+                client_name=client.name,
+                client_email=client.email,
+                status=campaign_client.status,
+                document_types=[
+                    CampaignStatusDocumentTypeResponse(name=s.name, satisfied=s.satisfied)
+                    for s in document_type_statuses
+                ],
+                documents=[
+                    CampaignStatusDocumentResponse(
+                        id=d.id,
+                        original_filename=d.original_filename,
+                        document_type_name=(
+                            types_by_id.get(d.campaign_document_type_id)
+                            if d.campaign_document_type_id
+                            else None
+                        ),
+                        status=d.status,
+                        uploaded_at=d.uploaded_at,
+                    )
+                    for d in documents
+                ],
+            )
+        )
+
+    return CampaignStatusResponse(
+        campaign_id=campaign.id,
+        campaign_name=campaign.name,
+        clients=clients_response,
+    )
