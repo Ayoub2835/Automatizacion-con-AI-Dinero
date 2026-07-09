@@ -24,6 +24,11 @@ class Settings(BaseSettings):
 
     backend_cors_origins: list[str] = ["http://localhost:3000"]
 
+    # URL pública del panel, usada para construir enlaces que un humano abre
+    # en su propio navegador (ej. el enlace seguro de subida de documentos
+    # en el email). No confundir con API_URL del frontend, que es interno.
+    frontend_url: str = "http://localhost:3000"
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"

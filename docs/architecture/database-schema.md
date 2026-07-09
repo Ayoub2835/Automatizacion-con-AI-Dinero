@@ -75,6 +75,25 @@ Los tipos de documento que pide una campaña (texto libre, ver ADR 0008).
 | `name` | text | Único por campaña (`UNIQUE(campaign_id, name)`) |
 | `created_at` | timestamptz | |
 
+### `campaign_clients`
+
+La instancia de "esta campaña enviada a este cliente": lleva el enlace
+seguro de subida (`upload_token`).
+
+| Columna | Tipo | Notas |
+|---|---|---|
+| `id` | UUID (PK) | |
+| `campaign_id` | UUID (FK → campaigns.id) | Indexado |
+| `client_id` | UUID (FK → clients.id) | Indexado |
+| `upload_token` | text | Único, indexado — es el enlace seguro (sin login) |
+| `status` | text con CHECK (`pending` \| `complete`) | |
+| `last_reminder_sent_at` | timestamptz (nullable) | Para T8 (recordatorios) |
+| `created_at` | timestamptz | |
+
+Restricción `UNIQUE(campaign_id, client_id)`: una campaña solo puede
+enviarse una vez a un mismo cliente (reenviar es idempotente, ver ADR 0008
+sobre `upload_token` sin expiración).
+
 ## Regla para tablas futuras
 
 Toda tabla de negocio nueva:

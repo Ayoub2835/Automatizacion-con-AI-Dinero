@@ -5,11 +5,13 @@ from app.infrastructure.database.models.campaign import (
     CampaignDocumentTypeModel,
     CampaignModel,
 )
+from app.infrastructure.database.models.campaign_client import CampaignClientModel
 from app.infrastructure.database.models.client import ClientModel
 from app.infrastructure.database.models.organization import OrganizationModel
 from app.infrastructure.database.models.user import UserModel
 
 __all__ = [
+    "CampaignClientModel",
     "CampaignDocumentTypeModel",
     "CampaignModel",
     "ClientModel",
