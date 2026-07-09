@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -16,7 +17,14 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   return (
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-        <span className="font-semibold">GestorIA</span>
+        <div className="flex items-center gap-6">
+          <span className="font-semibold">GestorIA</span>
+          <nav className="flex items-center gap-4 text-sm text-slate-600">
+            <Link href="/dashboard/clients" className="hover:text-slate-900">
+              Clientes
+            </Link>
+          </nav>
+        </div>
         <div className="flex items-center gap-4 text-sm text-slate-600">
           <span>{user.email}</span>
           <LogoutButton />

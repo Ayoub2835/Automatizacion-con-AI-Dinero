@@ -10,3 +10,12 @@ export interface TokenResponse {
   refresh_token: string;
   token_type: string;
 }
+
+export interface Client {
+  id: string;
+  organization_id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  created_at: string;
+}
