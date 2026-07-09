@@ -13,8 +13,11 @@ const PUBLIC_PATHS = ["/login", "/register"];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = request.cookies.has(SESSION_COOKIE_NAME);
+  // /upload/{token}: enlace seguro sin login (ver ADR 0008), el propio
+  // token es la autorización — no requiere cookie de sesión.
+  const isPublicUploadLink = pathname.startsWith("/upload/");
 
-  if (!hasSession && !PUBLIC_PATHS.includes(pathname)) {
+  if (!hasSession && !PUBLIC_PATHS.includes(pathname) && !isPublicUploadLink) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

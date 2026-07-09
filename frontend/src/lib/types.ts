@@ -33,6 +33,26 @@ export interface Campaign {
   document_types: CampaignDocumentType[];
 }
 
+export interface PublicDocumentTypeStatus {
+  name: string;
+  satisfied: boolean;
+}
+
+export interface PublicDocument {
+  id: string;
+  original_filename: string;
+  document_type_name: string | null;
+  status: "classified" | "unclassified";
+  uploaded_at: string;
+}
+
+export interface PublicCampaignStatus {
+  campaign_name: string;
+  client_status: "pending" | "complete";
+  document_types: PublicDocumentTypeStatus[];
+  documents: PublicDocument[];
+}
+
 export interface CampaignClientInvite {
   id: string;
   campaign_id: string;
