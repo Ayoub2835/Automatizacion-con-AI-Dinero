@@ -1,10 +1,11 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { CampaignStatusPanel } from "@/components/CampaignStatusPanel";
 import { SendCampaignForm } from "@/components/SendCampaignForm";
 import { Card } from "@/components/ui/Card";
 import { BackendError } from "@/lib/backend-client";
-import { getCampaign } from "@/lib/campaigns";
+import { getCampaign, getCampaignStatus } from "@/lib/campaigns";
 import { getClients } from "@/lib/clients";
 import { SESSION_COOKIE_NAME } from "@/lib/config";
 
@@ -16,7 +17,7 @@ export default async function CampaignDetailPage({
   const { id } = await params;
   const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value ?? "";
 
-  const [campaign, clients] = await Promise.all([
+  const [campaign, clients, status] = await Promise.all([
     getCampaign(token, id).catch((error: unknown) => {
       if (error instanceof BackendError && error.status === 404) {
         notFound();
@@ -24,6 +25,7 @@ export default async function CampaignDetailPage({
       throw error;
     }),
     getClients(token),
+    getCampaignStatus(token, id),
   ]);
 
   return (
@@ -39,6 +41,11 @@ export default async function CampaignDetailPage({
         <h2 className="mb-4 text-sm font-semibold text-slate-700">Enviar a clientes</h2>
         <SendCampaignForm campaignId={campaign.id} clients={clients} />
       </Card>
+
+      <div>
+        <h2 className="mb-4 text-sm font-semibold text-slate-700">Estado de la campaña</h2>
+        <CampaignStatusPanel status={status} />
+      </div>
     </div>
   );
 }

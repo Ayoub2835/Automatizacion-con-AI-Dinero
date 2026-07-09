@@ -53,6 +53,35 @@ export interface PublicCampaignStatus {
   documents: PublicDocument[];
 }
 
+export interface CampaignStatusDocumentType {
+  name: string;
+  satisfied: boolean;
+}
+
+export interface CampaignStatusDocument {
+  id: string;
+  original_filename: string;
+  document_type_name: string | null;
+  status: "classified" | "unclassified";
+  uploaded_at: string;
+}
+
+export interface CampaignClientStatus {
+  campaign_client_id: string;
+  client_id: string;
+  client_name: string;
+  client_email: string;
+  status: "pending" | "complete";
+  document_types: CampaignStatusDocumentType[];
+  documents: CampaignStatusDocument[];
+}
+
+export interface CampaignStatusResponse {
+  campaign_id: string;
+  campaign_name: string;
+  clients: CampaignClientStatus[];
+}
+
 export interface CampaignClientInvite {
   id: string;
   campaign_id: string;
