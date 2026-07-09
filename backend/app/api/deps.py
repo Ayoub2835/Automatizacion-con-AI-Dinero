@@ -10,9 +10,11 @@ from app.core.config import get_settings
 from app.core.security import decode_token
 from app.domain.entities.user import User
 from app.domain.exceptions import InvalidCredentialsError
+from app.domain.ports.document_classifier import DocumentClassifier
 from app.domain.ports.email_sender import EmailSender
 from app.infrastructure.database.repositories.user_repository import SqlAlchemyUserRepository
 from app.infrastructure.database.session import get_session
+from app.infrastructure.external.claude_document_classifier import ClaudeDocumentClassifier
 from app.infrastructure.external.smtp_email_sender import SmtpEmailSender
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=True)
@@ -41,3 +43,7 @@ async def get_current_user(
 
 def get_email_sender() -> EmailSender:
     return SmtpEmailSender(get_settings())
+
+
+def get_document_classifier() -> DocumentClassifier:
+    return ClaudeDocumentClassifier(get_settings().anthropic_api_key)

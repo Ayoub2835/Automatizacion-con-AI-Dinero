@@ -17,3 +17,4 @@ para el formato y el proceso.
 | [0008](0008-mvp-empleado-documental.md) | MVP "Empleado Documental": alcance y modelo de datos |
 | [0009](0009-email-smtp.md) | Envío de email por SMTP genérico, no un proveedor concreto |
 | [0010](0010-local-file-storage.md) | Almacenamiento de documentos en disco local (no S3 todavía) |
+| [0011](0011-claude-document-classification.md) | Clasificación automática de documentos con Claude |

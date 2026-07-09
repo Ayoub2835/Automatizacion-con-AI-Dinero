@@ -1,5 +1,8 @@
 from httpx import AsyncClient
 
+from app.domain.ports.document_classifier import ClassificationResult
+from tests.fakes import FakeDocumentClassifier, unclassified_result
+
 _PDF_MAGIC_BYTES = b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\ncontenido de prueba"
 
 
@@ -65,7 +68,10 @@ async def test_get_status_shows_required_document_types_unsatisfied(client: Asyn
     assert body["documents"] == []
 
 
-async def test_upload_document_succeeds(client: AsyncClient) -> None:
+async def test_upload_document_is_classified_with_high_confidence(
+    client: AsyncClient, document_classifier: FakeDocumentClassifier
+) -> None:
+    document_classifier.result = ClassificationResult(document_type_name="DNI", confidence=0.95)
     token = await _register_and_login(client, "subida2@example.com")
     headers = {"Authorization": f"Bearer {token}"}
     upload_token = await _get_upload_token(client, headers)
@@ -79,9 +85,61 @@ async def test_upload_document_succeeds(client: AsyncClient) -> None:
     assert len(body["documents"]) == 1
     document = body["documents"][0]
     assert document["original_filename"] == "dni.pdf"
-    # Todavía sin clasificar: la clasificación automática llega en T6.
+    assert document["status"] == "classified"
+    assert document["document_type_name"] == "DNI"
+    satisfied_by_name = {t["name"]: t["satisfied"] for t in body["document_types"]}
+    assert satisfied_by_name == {"DNI": True, "Recibo de autónomos": False}
+
+    call = document_classifier.calls[0]
+    assert call.content_type == "application/pdf"
+    assert set(call.allowed_type_names) == {"DNI", "Recibo de autónomos"}
+
+
+async def test_upload_document_stays_unclassified_with_low_confidence(
+    client: AsyncClient, document_classifier: FakeDocumentClassifier
+) -> None:
+    document_classifier.result = unclassified_result()
+    token = await _register_and_login(client, "subida-baja-confianza@example.com")
+    headers = {"Authorization": f"Bearer {token}"}
+    upload_token = await _get_upload_token(client, headers)
+
+    response = await client.post(
+        f"/api/v1/public/campaigns/{upload_token}/documents",
+        files={"file": ("documento.pdf", _PDF_MAGIC_BYTES, "application/pdf")},
+    )
+    assert response.status_code == 201
+    document = response.json()["documents"][0]
     assert document["status"] == "unclassified"
     assert document["document_type_name"] is None
+
+
+async def test_upload_stays_unclassified_when_classifier_fails(client: AsyncClient) -> None:
+    """Un fallo del clasificador (sin API key, red caída...) no debe romper
+    la subida — ver ADR 0011."""
+
+    class FailingClassifier:
+        async def classify(self, content, content_type, allowed_type_names):  # noqa: ANN001
+            raise RuntimeError("boom")
+
+    from app.api.deps import get_document_classifier
+    from app.main import app
+
+    token = await _register_and_login(client, "subida-fallo@example.com")
+    headers = {"Authorization": f"Bearer {token}"}
+    upload_token = await _get_upload_token(client, headers)
+
+    app.dependency_overrides[get_document_classifier] = FailingClassifier
+    try:
+        response = await client.post(
+            f"/api/v1/public/campaigns/{upload_token}/documents",
+            files={"file": ("dni.pdf", _PDF_MAGIC_BYTES, "application/pdf")},
+        )
+    finally:
+        del app.dependency_overrides[get_document_classifier]
+
+    assert response.status_code == 201
+    document = response.json()["documents"][0]
+    assert document["status"] == "unclassified"
 
 
 async def test_upload_rejects_unsupported_content_type(client: AsyncClient) -> None:

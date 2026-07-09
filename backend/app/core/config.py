@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     # Directorio donde se guardan los documentos subidos (ver ADR 0010).
     uploads_dir: str = "uploads"
 
+    # Clasificación automática de documentos con Claude (ver ADR 0011).
+    # Sin valor por defecto: si no está configurada, la subida sigue
+    # funcionando pero todo documento queda "sin clasificar".
+    anthropic_api_key: str | None = None
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"

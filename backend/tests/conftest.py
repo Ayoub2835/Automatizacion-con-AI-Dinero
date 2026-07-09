@@ -15,12 +15,12 @@ from sqlalchemy.ext.asyncio import (  # noqa: E402
     create_async_engine,
 )
 
-from app.api.deps import get_db_session, get_email_sender  # noqa: E402
+from app.api.deps import get_db_session, get_document_classifier, get_email_sender  # noqa: E402
 from app.core.config import get_settings  # noqa: E402
 from app.infrastructure.database.base import Base  # noqa: E402
 from app.infrastructure.database.models import OrganizationModel, UserModel  # noqa: E402, F401
 from app.main import app  # noqa: E402
-from tests.fakes import FakeEmailSender  # noqa: E402
+from tests.fakes import FakeDocumentClassifier, FakeEmailSender  # noqa: E402
 
 settings = get_settings()
 
@@ -61,14 +61,23 @@ def email_sender() -> FakeEmailSender:
 
 
 @pytest_asyncio.fixture
+def document_classifier() -> FakeDocumentClassifier:
+    """Doble en memoria de DocumentClassifier, inyectado en el cliente de test."""
+    return FakeDocumentClassifier()
+
+
+@pytest_asyncio.fixture
 async def client(
-    db_session: AsyncSession, email_sender: FakeEmailSender
+    db_session: AsyncSession,
+    email_sender: FakeEmailSender,
+    document_classifier: FakeDocumentClassifier,
 ) -> AsyncGenerator[AsyncClient, None]:
     async def _override_get_db_session() -> AsyncGenerator[AsyncSession, None]:
         yield db_session
 
     app.dependency_overrides[get_db_session] = _override_get_db_session
     app.dependency_overrides[get_email_sender] = lambda: email_sender
+    app.dependency_overrides[get_document_classifier] = lambda: document_classifier
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac

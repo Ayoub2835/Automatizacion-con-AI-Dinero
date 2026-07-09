@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session
+from app.api.deps import get_db_session, get_document_classifier
 from app.api.v1.schemas.public import (
     PublicCampaignStatusResponse,
     PublicDocumentResponse,
@@ -13,6 +13,7 @@ from app.core.config import get_settings
 from app.domain.entities.campaign import Campaign
 from app.domain.entities.campaign_client import CampaignClient
 from app.domain.entities.document import Document
+from app.domain.ports.document_classifier import DocumentClassifier
 from app.infrastructure.database.repositories.campaign_client_repository import (
     SqlAlchemyCampaignClientRepository,
 )
@@ -35,12 +36,14 @@ _MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024
 
 def _get_public_campaign_service(
     session: AsyncSession = Depends(get_db_session),
+    classifier: DocumentClassifier = Depends(get_document_classifier),
 ) -> PublicCampaignService:
     return PublicCampaignService(
         campaign_clients=SqlAlchemyCampaignClientRepository(session),
         campaigns=SqlAlchemyCampaignRepository(session),
         documents=SqlAlchemyDocumentRepository(session),
         file_storage=LocalFileStorage(get_settings().uploads_dir),
+        classifier=classifier,
     )
 
 
