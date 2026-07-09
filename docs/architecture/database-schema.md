@@ -52,6 +52,29 @@ ver [ADR 0008](../decisions/0008-mvp-empleado-documental.md)).
 | `metadata` | JSONB | Punto de extensión |
 | `created_at` | timestamptz | |
 
+### `campaigns`
+
+Una campaña de solicitud de documentación.
+
+| Columna | Tipo | Notas |
+|---|---|---|
+| `id` | UUID (PK) | |
+| `organization_id` | UUID (FK → organizations.id) | Obligatorio, indexado |
+| `name` | text | |
+| `metadata` | JSONB | Punto de extensión |
+| `created_at` | timestamptz | |
+
+### `campaign_document_types`
+
+Los tipos de documento que pide una campaña (texto libre, ver ADR 0008).
+
+| Columna | Tipo | Notas |
+|---|---|---|
+| `id` | UUID (PK) | |
+| `campaign_id` | UUID (FK → campaigns.id) | Obligatorio, indexado |
+| `name` | text | Único por campaña (`UNIQUE(campaign_id, name)`) |
+| `created_at` | timestamptz | |
+
 ## Regla para tablas futuras
 
 Toda tabla de negocio nueva:
