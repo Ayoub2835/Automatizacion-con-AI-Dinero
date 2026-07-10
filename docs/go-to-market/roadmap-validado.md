@@ -4,8 +4,10 @@ Este backlog empieza **casi vacío a propósito**. No es un descuido — es
 la consecuencia directa de la regla de esta fase (ver
 [`README.md`](README.md)):
 
-> No se desarrolla ninguna funcionalidad nueva que no haya sido
-> solicitada o validada por al menos 3 gestorías distintas.
+> No se cambia el producto por la opinión de una sola gestoría. Solo se
+> modifica el roadmap cuando 3 gestorías distintas tienen el mismo
+> problema, o cuando existe una razón clara de bloqueo para vender (ej.
+> nadie firma sin multi-usuario, y lo dicen 3 de 3 pilotos).
 
 El proceso para mover algo de una tabla a otra está en
 [`proceso-feedback.md`](proceso-feedback.md). Aquí solo se refleja el
@@ -13,10 +15,11 @@ resultado.
 
 ## Próximo en construir (0 elementos)
 
-Vacío. En cuanto una candidata cruce el umbral de 3 gestorías
-independientes, con al menos una calificándola como bloqueante, aparece
-aquí con: qué se va a construir, enlace a las 3 fichas de feedback que
-lo justifican, y fecha en la que cruzó el umbral.
+Vacío. En cuanto una candidata cumpla una de las dos condiciones de
+arriba — 3 gestorías independientes que la pidan, o una razón de
+bloqueo de venta clara y repetida — aparece aquí con: qué se va a
+construir, enlace a las fichas de feedback que lo justifican, y fecha
+en la que se validó.
 
 ## Candidatas (pendientes de validar)
 

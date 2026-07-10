@@ -63,25 +63,33 @@ ejemplo, la mencionan en la demo y otra vez en el seguimiento), cuenta
 como **una sola gestoría**, no dos. Lo que valida una petición es la
 diversidad de quién la pide, no la repetición.
 
-## Paso 3 — La regla de las 3 gestorías
+## Paso 3 — La regla: no se cambia el producto por una opinión individual
 
-Una petición solo pasa de "candidata" a "roadmap comprometido" cuando:
+Una petición solo pasa de "candidata" a "roadmap comprometido" cuando se
+cumple **una de estas dos condiciones** (no hace falta las dos):
 
-1. La han pedido **3 gestorías distintas**, de forma independiente (no
-   porque tú se lo sugeriste a la segunda o tercera después de que la
-   primera la mencionara — eso contamina la señal).
-2. Al menos una de esas tres la ha calificado como **bloqueante**, no
-   solo "estaría bien".
+**A) 3 gestorías distintas tienen el mismo problema.** Lo han pedido o
+mencionado de forma independiente (no porque tú se lo sugeriste a la
+segunda o tercera después de que la primera lo mencionara — eso
+contamina la señal). No hace falta que las tres lo llamen
+"bloqueante" — basta con que sea el mismo problema real en las tres.
 
-Cuando una petición cumple esto, se mueve de la tabla de candidatas a la
-sección de "próximo en construir" de `roadmap-validado.md`, con un
-enlace a las 3 fichas de feedback que la justifican.
+**B) Existe una razón clara de bloqueo para vender.** Aunque el universo
+de conversaciones sea pequeño, si la ausencia de algo concreto ha hecho
+perder la venta o el piloto de forma repetida y explícita (ejemplo: 3
+de 3 pilotos dicen literalmente que no firmarían sin multi-usuario),
+eso es señal suficiente por sí sola, sin esperar a acumular 3
+gestorías más en el total del pipeline.
+
+Cuando una petición cumple A o B, se mueve de la tabla de candidatas a
+la sección de "próximo en construir" de `roadmap-validado.md`, con un
+enlace a las fichas de feedback que la justifican.
 
 ## Paso 4 — Revisión periódica
 
 Cada vez que se cierre una nueva ficha de feedback (no en un ciclo fijo
 de calendario — que sea después de cada conversación real), revisa si
-alguna candidata ha cruzado el umbral de 3 gestorías. Si es así,
+alguna candidata cumple la condición A o B del paso 3. Si es así,
 actualízalo en `roadmap-validado.md` inmediatamente, no lo dejes
 acumulado.
 
