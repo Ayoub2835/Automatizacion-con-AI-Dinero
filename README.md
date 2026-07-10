@@ -1,13 +1,15 @@
 # GestorIA (nombre de trabajo)
 
-> SaaS de IA para gestorías españolas. Este repositorio contiene la **base
-> técnica** del producto: todavía estamos validando el problema exacto con
-> clientes reales, por lo que el código prioriza modularidad y facilidad de
-> cambio sobre funcionalidades específicas.
+> SaaS de IA para gestorías españolas. El MVP ("Empleado Documental":
+> reclamar, recibir y clasificar documentación de clientes) está terminado
+> y funcionando de punta a punta. Ya no se construyen funcionalidades
+> nuevas — la fase actual es conseguir el primer cliente de pago.
 
-**Estado del proyecto:** 🏗️ Fase de fundación técnica (pre-validación de mercado).
-No hay funcionalidades de negocio implementadas todavía a propósito — ver
-[`docs/decisions/`](docs/decisions) y [`ROADMAP.md`](ROADMAP.md) para el razonamiento.
+**Estado del proyecto:** 📣 Validación comercial (MVP terminado, sin
+funcionalidades nuevas hasta que 3 gestorías distintas las pidan). Ver
+[`ROADMAP.md`](ROADMAP.md), [`docs/decisions/`](docs/decisions) y
+[`docs/go-to-market/`](docs/go-to-market/README.md) para el proceso de
+venta, onboarding y feedback.
 
 ## ¿Qué es esto?
 
@@ -16,17 +18,21 @@ gestorías (asesorías fiscales, laborales y contables) en España. Incluye:
 
 - Backend en **Python + FastAPI** con arquitectura limpia (hexagonal).
 - Base de datos **PostgreSQL** con un modelo de datos multi-tenant flexible.
-- Panel web en **Next.js + TypeScript** (base, sin funcionalidades de negocio).
+- Panel web en **Next.js + TypeScript**, con el MVP "Empleado Documental"
+  funcionando de punta a punta (clientes, campañas, envío, subida pública,
+  clasificación con Claude, panel de estado, recordatorios).
 - Entorno de desarrollo con **Docker Compose**.
 - CI/CD con **GitHub Actions** (lint, tipado, tests).
 - Documentación de arquitectura y decisiones técnicas (ADRs).
 
-Lo que **no** incluye todavía, a propósito:
+Lo que **no** incluye todavía, a propósito (ver
+[`docs/go-to-market/roadmap-validado.md`](docs/go-to-market/roadmap-validado.md)):
 
 - Integraciones con software de gestorías (A3, Sage, etc.).
 - Automatizaciones o agentes de IA complejos.
-- Cualquier funcionalidad que dependa de hipótesis de producto sin validar
-  con clientes reales.
+- Multi-usuario, WhatsApp, importación masiva, exportación de datos, y
+  cualquier otra cosa que no haya sido pedida o validada por al menos 3
+  gestorías reales.
 
 Ver [`docs/decisions/0000-no-features-before-validation.md`](docs/decisions/0000-no-features-before-validation.md)
 para el razonamiento completo.
@@ -78,6 +84,7 @@ disponibles (tests, lint, migraciones, etc.).
 | [`ROADMAP.md`](ROADMAP.md) | Fases del producto y qué se ha decidido posponer |
 | [`docs/decisions/`](docs/decisions) | ADRs: por qué se tomó cada decisión técnica relevante |
 | [`docs/architecture/`](docs/architecture) | Diagramas y documentación técnica en detalle |
+| [`docs/go-to-market/`](docs/go-to-market/README.md) | Objeciones, guion de venta, onboarding, feedback y roadmap validado por clientes reales |
 | [`backend/README.md`](backend/README.md) | Cómo trabajar en el backend |
 | [`frontend/README.md`](frontend/README.md) | Cómo trabajar en el frontend |
 

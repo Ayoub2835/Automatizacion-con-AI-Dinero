@@ -59,6 +59,25 @@ extensión, no se construyen sin que un cliente de pago los pida.
 Criterio de salida de esta fase: una gestoría real usa el flujo completo
 con sus propios clientes durante al menos una campaña real.
 
+## Fase 2.5 — Validación comercial 🚧 (en curso)
+
+El MVP está terminado. **Se deja de escribir código de producto.** El
+único objetivo ahora es conseguir el primer cliente de pago y validar
+con gestorías reales si esto resuelve un problema por el que pagarían.
+Todo el proceso — objeciones, guion de venta, onboarding, recogida de
+feedback y el backlog que decide qué de las Fases 3/4 de abajo (si algo)
+se acaba construyendo — vive en
+[`docs/go-to-market/`](docs/go-to-market/README.md).
+
+Regla explícita de esta fase:
+
+> No se desarrolla ninguna funcionalidad nueva que no haya sido
+> solicitada o validada por al menos 3 gestorías distintas. Ver
+> [`docs/go-to-market/roadmap-validado.md`](docs/go-to-market/roadmap-validado.md).
+
+Criterio de salida de esta fase: al menos una gestoría paga por el
+producto de forma recurrente.
+
 ## Fase 3 — Integraciones (pospuesta explícitamente)
 
 No se empieza sin que un cliente de pago la pida:
