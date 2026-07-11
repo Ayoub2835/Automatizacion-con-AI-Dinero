@@ -26,6 +26,11 @@ plugins = ["pydantic.mypy"]
 module = "alembic.*"
 ignore_errors = true
 
+[[tool.mypy.overrides]]
+# ebooklib no publica tipos ni marcador py.typed (ver ADR 0014).
+module = "ebooklib.*"
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 # Todos los fixtures/tests async comparten un único event loop de sesión,

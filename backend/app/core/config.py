@@ -46,6 +46,12 @@ class Settings(BaseSettings):
     # funcionando pero todo documento queda "sin clasificar".
     anthropic_api_key: str | None = None
 
+    # BookAgent AI (ver ADR 0014). Reutiliza anthropic_api_key para generar
+    # contenido. En falso hasta que haya credenciales de partner de Google
+    # Play Books — mientras tanto ese conector opera en modo manual/asistido
+    # igual que KDP, Apple Books y Kobo.
+    google_play_books_api_enabled: bool = False
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"

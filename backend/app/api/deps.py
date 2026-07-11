@@ -10,11 +10,18 @@ from app.core.config import get_settings
 from app.core.security import decode_token
 from app.domain.entities.user import User
 from app.domain.exceptions import InvalidCredentialsError
+from app.domain.ports.book_content_generator import BookContentGenerator
 from app.domain.ports.document_classifier import DocumentClassifier
+from app.domain.ports.ebook_exporter import EbookExporter
 from app.domain.ports.email_sender import EmailSender
 from app.infrastructure.database.repositories.user_repository import SqlAlchemyUserRepository
 from app.infrastructure.database.session import get_session
+from app.infrastructure.external.claude_book_content_generator import (
+    ClaudeBookContentGenerator,
+)
 from app.infrastructure.external.claude_document_classifier import ClaudeDocumentClassifier
+from app.infrastructure.external.ebook_exporter import EbookLibExporter
+from app.infrastructure.external.publishing.registry import PublishingConnectorRegistry
 from app.infrastructure.external.smtp_email_sender import SmtpEmailSender
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=True)
@@ -47,3 +54,17 @@ def get_email_sender() -> EmailSender:
 
 def get_document_classifier() -> DocumentClassifier:
     return ClaudeDocumentClassifier(get_settings().anthropic_api_key)
+
+
+def get_book_content_generator() -> BookContentGenerator:
+    return ClaudeBookContentGenerator(get_settings().anthropic_api_key)
+
+
+def get_ebook_exporter() -> EbookExporter:
+    return EbookLibExporter()
+
+
+def get_publishing_connector_registry() -> PublishingConnectorRegistry:
+    return PublishingConnectorRegistry(
+        google_play_books_api_enabled=get_settings().google_play_books_api_enabled
+    )
