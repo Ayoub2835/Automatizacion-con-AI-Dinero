@@ -4,10 +4,16 @@ Este backlog empieza **casi vacío a propósito**. No es un descuido — es
 la consecuencia directa de la regla de esta fase (ver
 [`README.md`](README.md)):
 
-> No se cambia el producto por la opinión de una sola gestoría. Solo se
-> modifica el roadmap cuando 3 gestorías distintas tienen el mismo
-> problema, o cuando existe una razón clara de bloqueo para vender (ej.
-> nadie firma sin multi-usuario, y lo dicen 3 de 3 pilotos).
+> Cero funcionalidades nuevas hasta conseguir al menos 3 clientes
+> piloto. Sin excepciones.
+
+Esta tabla es, mientras tanto, un registro de candidatas — no una lista
+de tareas pendientes de asignar. Nada de aquí se construye hasta que:
+
+1. **Haya 3 pilotos activos** (bloqueo temporal absoluto, ver
+   `README.md`), y
+2. Además, esa petición concreta cumpla: 3 gestorías distintas con el
+   mismo problema, o una razón clara de bloqueo de venta repetida.
 
 El proceso para mover algo de una tabla a otra está en
 [`proceso-feedback.md`](proceso-feedback.md). Aquí solo se refleja el
