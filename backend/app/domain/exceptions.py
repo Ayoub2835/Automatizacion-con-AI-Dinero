@@ -24,14 +24,3 @@ class AlreadyExistsError(DomainError):
 class InvalidCredentialsError(DomainError):
     def __init__(self) -> None:
         super().__init__("Credenciales inválidas")
-
-
-class InvalidStateTransitionError(DomainError):
-    """Una operación que solo es válida en ciertos estados (ej. aprobar una
-    Publication) se intenta desde un estado que no lo permite — ver ADR 0014."""
-
-    def __init__(self, entity: str, from_state: str, action: str) -> None:
-        self.entity = entity
-        self.from_state = from_state
-        self.action = action
-        super().__init__(f"No se puede '{action}' {entity} en estado '{from_state}'")

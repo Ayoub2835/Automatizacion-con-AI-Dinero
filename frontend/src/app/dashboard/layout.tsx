@@ -26,12 +26,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             <Link href="/dashboard/campaigns" className="hover:text-slate-900">
               Campañas
             </Link>
-            <Link href="/dashboard/books" className="hover:text-slate-900">
-              Libros
-            </Link>
-            <Link href="/dashboard/publishing" className="hover:text-slate-900">
-              Publicación
-            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4 text-sm text-slate-600">

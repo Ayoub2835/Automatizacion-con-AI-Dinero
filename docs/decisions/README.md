@@ -20,4 +20,3 @@ para el formato y el proceso.
 | [0011](0011-claude-document-classification.md) | Clasificación automática de documentos con Claude |
 | [0012](0012-campaign-client-completion.md) | Cuándo se marca "completo" un cliente de una campaña |
 | [0013](0013-reminder-resend-policy.md) | Política de reenvío de recordatorios |
-| [0014](0014-bookagent-ai-product.md) | BookAgent AI: agente autónomo de creación y publicación de libros |

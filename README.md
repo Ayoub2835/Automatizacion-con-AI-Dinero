@@ -11,25 +11,6 @@ funcionalidades nuevas hasta que 3 gestorías distintas las pidan). Ver
 [`docs/go-to-market/`](docs/go-to-market/README.md) para el proceso de
 venta, onboarding y feedback.
 
-## Dos productos, una base técnica
-
-Este repositorio aloja dos productos independientes sobre la misma base
-multi-tenant (auth, PostgreSQL, backend hexagonal, panel Next.js con
-patrón BFF):
-
-- **GestorIA** — el SaaS de gestión documental descrito arriba. En fase de
-  validación comercial: **sin funcionalidades nuevas** hasta que 3
-  gestorías reales las pidan (ver ADR 0000).
-- **[BookAgent AI](docs/decisions/0014-bookagent-ai-product.md)** — agente
-  autónomo de creación y publicación de libros digitales: investiga
-  mercado, escribe el manuscrito completo, lo exporta a EPUB/PDF y prepara
-  (con revisión humana obligatoria) su publicación en Amazon KDP, Apple
-  Books, Google Play Books y Kobo. Código en
-  `backend/app/domain/entities/book.py`, `publishing.py` y sus capas
-  asociadas; panel en `/dashboard/books` y `/dashboard/publishing`. La
-  política de "sin features sin validar" de ADR 0000 es específica de
-  GestorIA — no aplica a este segundo producto.
-
 ## ¿Qué es esto?
 
 Un punto de partida profesional para construir un SaaS de IA dirigido a

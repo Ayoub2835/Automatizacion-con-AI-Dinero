@@ -128,10 +128,8 @@ sepa que son pendientes deliberadas, no descuidos:
 - **Modelo de suscripción y facturación** (planes, límites de uso).
 - **Integraciones con software de gestorías** (A3, Sage, etc.) — requiere
   saber qué usa cada cliente objetivo.
-- **Automatizaciones y agentes de IA complejos para GestorIA** — requiere
-  saber qué tarea manual duele lo suficiente como para automatizarla. Esto
-  no aplica a BookAgent AI (ver ADR 0014), un segundo producto que sí es,
-  por definición, un agente autónomo de generación de contenido.
+- **Automatizaciones y agentes de IA complejos** — requiere saber qué
+  tarea manual duele lo suficiente como para automatizarla.
 - **Modelo de permisos granular** (más allá de rol admin/miembro).
 - **Estrategia de despliegue en producción** (proveedor cloud, orquestación).
   Docker Compose cubre desarrollo local; producción se decide cuando haya

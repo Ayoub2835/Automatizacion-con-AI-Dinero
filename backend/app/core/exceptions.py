@@ -8,7 +8,6 @@ from app.domain.exceptions import (
     DomainError,
     EntityNotFoundError,
     InvalidCredentialsError,
-    InvalidStateTransitionError,
 )
 
 logger = logging.getLogger(__name__)
@@ -17,7 +16,6 @@ _STATUS_BY_EXCEPTION: dict[type[DomainError], int] = {
     EntityNotFoundError: status.HTTP_404_NOT_FOUND,
     AlreadyExistsError: status.HTTP_409_CONFLICT,
     InvalidCredentialsError: status.HTTP_401_UNAUTHORIZED,
-    InvalidStateTransitionError: status.HTTP_409_CONFLICT,
 }
 
 
